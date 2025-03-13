@@ -40,11 +40,12 @@ function GenerateMnemonic() {
         const wallet = Wallet.createForEth(0);
 
         const id = uuidV4();
-        const accountMetadata = {
-            id: {
+        const accountMetadata = [
+            {
+                id,
                 name: 'Account 1',
             },
-        };
+        ];
         localStorage.setItem(
             'accountMetadata',
             JSON.stringify({
@@ -71,8 +72,9 @@ function GenerateMnemonic() {
         };
 
         localStorage.setItem('accounts', JSON.stringify([account]));
+        localStorage.setItem('selectedAccount', id);
 
-        navigate('/accounts')
+        navigate('/accounts');
     };
 
     return (
