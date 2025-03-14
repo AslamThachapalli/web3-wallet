@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { v4 as uuidV4 } from "uuid";
+import { getAbbrevation } from "@/lib/utils";
 
 export function AddAccount() {
     const navigate = useNavigate();
@@ -81,18 +82,6 @@ export function AddAccount() {
         localStorage.setItem('selectedAccount', id);
 
         navigate('/accounts');
-    };
-
-    const getAbbrevation = (accountName: string) => {
-        const nameList = accountName.split(' ');
-
-        let abbrev = nameList[0][0];
-
-        if (nameList[1]) {
-            abbrev += nameList[1][0];
-        }
-
-        return abbrev;
     };
 
     return (
