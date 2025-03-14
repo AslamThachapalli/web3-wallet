@@ -1,8 +1,10 @@
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 export default function AccountsRoute() {
+    const navigate = useNavigate();
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState('');
 
@@ -27,11 +29,15 @@ export default function AccountsRoute() {
         return abbrev;
     };
 
+    const handleAddWallet = () => {
+        navigate('/add-wallet')
+    }
+
     return (
         <div className="h-full p-3">
             <div className="h-full w-[80px] bg-black rounded-lg shadow-xl flex flex-col justify-center items-center text-slate-400 py-4 px-2">
                 <ArrowLeft className="w-5 h-5 hover:bg-white hover:text-black rounded-md cursor-pointer" />
-                <div className="flex-grow py-4">
+                <div className="flex-grow py-4 flex flex-col gap-2">
                     {accounts.map((account: any) => (
                         <div
                             key={account.id}
@@ -59,7 +65,7 @@ export default function AccountsRoute() {
                         </div>
                     ))}
                 </div>
-                <Plus className="w-5 h-5 cursor-pointer" />
+                <Plus className="w-5 h-5 cursor-pointer" onClick={handleAddWallet}/>
             </div>
         </div>
     );

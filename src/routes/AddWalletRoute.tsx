@@ -1,14 +1,29 @@
+import { SelectionCard } from '@/components/addWallet/SelectionCard';
 import { Button } from '@/components/ui/button';
 import { Download, Plus, X } from 'lucide-react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function AddWalletRoute() {
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // const accounts = JSON.parse(
+        //     localStorage.getItem('accounts') || '[]',
+        // );
+        // if (accounts && accounts.length > 0) {
+        //     navigate('/accounts');
+        // }
+    }, []);
+
+    const handleClose = ( ) => {
+        navigate(-1)
+    }
+
     return (
         <div className="flex flex-col justify-between h-full text-white">
             <div className="flex items-center border-b-2 p-4">
-                <X className="cursor-pointer" />
+                <X className="cursor-pointer" onClick={handleClose}/>
                 <p className="font-semibold flex-grow flex justify-center">
                     Add / Connect Wallet
                 </p>
@@ -28,26 +43,8 @@ export default function AddWalletRoute() {
                 />
             </div>
             <div className="flex items-center border-t-2 p-4">
-                <Button className="w-full">Close</Button>
+                <Button className="w-full" onClick={handleClose}>Close</Button>
             </div>
-        </div>
-    );
-}
-
-interface SelectionCardProps {
-    icon: React.ReactNode;
-    title: string;
-    onClick: () => void;
-}
-
-function SelectionCard(props: SelectionCardProps) {
-    return (
-        <div
-            className="bg-gray-500 rounded-lg p-4 cursor-pointer flex items-center gap-4"
-            onClick={props.onClick}
-        >
-            <div className="p-1 rounded-full bg-gray-400">{props.icon}</div>
-            <p className="font-semibold">{props.title}</p>
         </div>
     );
 }
