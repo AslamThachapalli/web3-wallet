@@ -2,8 +2,10 @@ import { SidePanel } from '@/components/accounts/SidePanel';
 import { Ethereum } from '@/lib/ethereum';
 import { Solana } from '@/lib/solana';
 import { getAbbrevation } from '@/lib/utils';
+import { Copy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 export default function AccountsRoute() {
     const navigate = useNavigate();
@@ -81,6 +83,11 @@ export default function AccountsRoute() {
         }
     }, [selectedAccount]);
 
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        toast.success('Copied to clipboard');
+    };
+
     return (
         <div
             className="h-full p-3 relative overflow-hidden"
@@ -110,13 +117,34 @@ export default function AccountsRoute() {
                                     key={chain.chainType}
                                     className="bg-gray-500 rounded-lg py-2 px-4 cursor-pointer flex items-center gap-4 w-full text-white"
                                 >
-                                    <div className="flex flex-col">
-                                        <p className="font-semibold">
-                                            {chain.chainName}
-                                        </p>
+                                    <div className="flex flex-col w-full">
+                                        <div className="flex items-center justify-between gap-2 w-full">
+                                            <p className="font-semibold">
+                                                {chain.chainName}
+                                            </p>
+                                            <div
+                                                className="flex items-center justify-end gap-2 group"
+                                                onClick={() =>
+                                                    handleCopy(chain.publicKey)
+                                                }
+                                            >
+                                                <p className="text-sm">
+                                                    {`${chain.publicKey.slice(
+                                                        0,
+                                                        4,
+                                                    )}...${chain.publicKey.slice(
+                                                        -4,
+                                                    )}`}
+                                                </p>
+                                                <Copy className="w-4 h-4 cursor-pointer text-gray-400 group-hover:text-white" />
+                                            </div>
+                                        </div>
                                         <p className="text-sm">
-                                            {`${chainBalances[chain.chainType] ??
-                                                'Loading...'} ${chain.symbol}`}
+                                            {`${
+                                                chainBalances[
+                                                    chain.chainType
+                                                ] ?? 'Loading...'
+                                            } ${chain.symbol}`}
                                         </p>
                                     </div>
                                 </div>
