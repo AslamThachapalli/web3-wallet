@@ -4,9 +4,10 @@ import { Checkbox } from "../ui/checkbox";
 import { useEffect, useState } from "react";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { toast } from "sonner";
-import { Wallet } from "@/lib/wallet";
 import { v4 as uuidV4 } from "uuid";
 import { ArrowLeft } from "lucide-react";
+import { Ethereum } from "@/lib/ethereum";
+import { Solana } from "@/lib/solana";
 
 export function GenerateMnemonic() {
     const navigate = useNavigate();
@@ -28,8 +29,8 @@ export function GenerateMnemonic() {
         const seed = mnemonicToSeedSync(mnemonics);
         localStorage.setItem('seed', seed.toString('hex'));
 
-        const keypair = Wallet.createForSolana(0);
-        const wallet = Wallet.createForEth(0);
+        const keypair = Solana.createWallet(0);
+        const wallet = Ethereum.createWallet(0);
 
         const id = uuidV4();
         const accountMetadata = [
@@ -52,11 +53,15 @@ export function GenerateMnemonic() {
             chains: {
                 eth: {
                     chainType: 'ethereum',
+                    chainName: 'Ethereum',
+                    symbol: 'ETH',
                     publicKey: wallet.address,
                     privateKey: wallet.privateKey,
                 },
                 sol: {
                     chainType: 'solana',
+                    chainName: 'Solana',
+                    symbol: 'SOL',
                     publicKey: keypair.publicKey,
                     privateKey: keypair.secretKey,
                 },

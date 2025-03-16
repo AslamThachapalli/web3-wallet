@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from '@/components/ui/sonner';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 
 import './index.css';
 import { AppProvider } from './contexts/AppContext';
@@ -16,6 +16,10 @@ createRoot(document.getElementById('root')!).render(
                 <div className="max-h-[480px] h-full max-w-sm w-full bg-gray-700 rounded-lg shadow-lg">
                     <BrowserRouter>
                         <Routes>
+                            <Route
+                                path="/"
+                                element={<Navigate to="/accounts" replace />}
+                            />
                             <Route
                                 path="/accounts"
                                 element={<AccountsRoute />}

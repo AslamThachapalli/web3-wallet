@@ -1,12 +1,13 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Wallet } from "@/lib/wallet";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { v4 as uuidV4 } from "uuid";
 import { getAbbrevation } from "@/lib/utils";
+import { Solana } from "@/lib/solana";
+import { Ethereum } from "@/lib/ethereum";
 
 export function AddAccount() {
     const navigate = useNavigate();
@@ -34,8 +35,8 @@ export function AddAccount() {
 
         const derivationIndex = accounts.length;
 
-        const keypair = Wallet.createForSolana(derivationIndex);
-        const wallet = Wallet.createForEth(derivationIndex);
+        const keypair = Solana.createWallet(derivationIndex);
+        const wallet = Ethereum.createWallet(derivationIndex);
 
         const metaData = JSON.parse(
             localStorage.getItem('accountMetadata') || '[]',
@@ -64,11 +65,15 @@ export function AddAccount() {
             chains: {
                 eth: {
                     chainType: 'ethereum',
+                    chainName: 'Ethereum',
+                    symbol: 'ETH',
                     publicKey: wallet.address,
                     privateKey: wallet.privateKey,
                 },
                 sol: {
                     chainType: 'solana',
+                    chainName: 'Solana',
+                    symbol: 'SOL',
                     publicKey: keypair.publicKey,
                     privateKey: keypair.secretKey,
                 },

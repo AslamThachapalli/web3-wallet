@@ -1,102 +1,136 @@
-import { cn, getAbbrevation } from '@/lib/utils';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { SidePanel } from '@/components/accounts/SidePanel';
+import { Ethereum } from '@/lib/ethereum';
+import { Solana } from '@/lib/solana';
+import { getAbbrevation } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function AccountsRoute() {
     const navigate = useNavigate();
 
-    const [accounts, setAccounts] = useState([]);
-    const [selectedAccount, setSelectedAccount] = useState('');
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [selectedAccount, setSelectedAccount] = useState<any>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [chainBalances, setChainBalances] = useState<Record<string, number>>(
+        {},
+    );
+
+    const loadAccounts = () => {
+        const accountData = localStorage.getItem('accounts');
+        const accounts = accountData ? JSON.parse(accountData) : [];
+
+        const accountMetadata = localStorage.getItem('accountMetadata');
+        const accountMetadataData = accountMetadata
+            ? JSON.parse(accountMetadata)
+            : {};
+
+        if (!accounts || accounts.length === 0) {
+            navigate('/add-wallet');
+            return;
+        }
+
+        const selectedAccountId = localStorage.getItem('selectedAccount');
+        const selectedAccount = accounts.find(
+            (account: any) => account.identifier === selectedAccountId,
+        );
+
+        const selectedAccountMetadata = accountMetadataData.accounts.find(
+            (account: any) => account.id === selectedAccountId,
+        );
+
+        setSelectedAccount({
+            ...selectedAccount,
+            ...selectedAccountMetadata,
+        });
+    };
+
+    const loadBalances = async () => {
+        if (!selectedAccount?.chains) return;
+
+        try {
+            const balances: Record<string, number> = {};
+
+            for (const chain of Object.values(selectedAccount.chains)) {
+                const chainData = chain as any;
+                try {
+                    const balance = await (chainData.chainType === 'solana'
+                        ? Solana.getBalance(chainData.publicKey)
+                        : Ethereum.getBalance(chainData.publicKey));
+                    balances[chainData.chainType] = balance;
+                } catch (error) {
+                    console.error(
+                        `Error fetching balance for ${chainData.chainType}:`,
+                        error,
+                    );
+                    balances[chainData.chainType] = 0;
+                }
+            }
+
+            setChainBalances(balances);
+        } catch (error) {
+            console.error('Error loading balances:', error);
+        }
+    };
 
     useEffect(() => {
-        const accounts = JSON.parse(
-            localStorage.getItem('accountMetadata')!,
-        ).accounts;
-        setAccounts(accounts);
+        loadAccounts();
+    }, [navigate]);
 
-        setSelectedAccount(localStorage.getItem('selectedAccount') || '');
-    }, []);
-
-    const handleAddWallet = () => {
-        setIsSidebarOpen(false);
-        navigate('/add-wallet');
-    };
+    useEffect(() => {
+        if (selectedAccount) {
+            loadBalances();
+        }
+    }, [selectedAccount]);
 
     return (
         <div
             className="h-full p-3 relative overflow-hidden"
             onClick={() => setIsSidebarOpen(false)}
         >
-            <div className="relative z-0">
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsSidebarOpen(true);
-                    }}
-                    className="p-2 rounded-md hover:bg-gray-600"
-                >
-                    Button
-                </button>
-
-                {/* Your main content goes here */}
-                <div className="mt-4">
-                    <h1 className="text-white text-xl">Your Accounts</h1>
-                    {/* Other content */}
-                </div>
-            </div>
-
-            <div
-                className={cn([
-                    'absolute top-0 left-0 z-10 h-full py-4 px-2 transition-transform duration-300 ease-in-out transform',
-                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
-                ])}
-            >
-                <div
-                    className="h-full w-[80px] bg-black rounded-lg shadow-xl flex flex-col justify-center items-center text-slate-400  py-4 px-2"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                    }}
-                >
-                    <ArrowLeft
-                        className="w-5 h-5 hover:bg-white hover:text-black rounded-md cursor-pointer"
-                        onClick={() => setIsSidebarOpen(false)}
-                    />
-                    <div className="flex-grow py-4 flex flex-col gap-2">
-                        {accounts.map((account: any) => (
-                            <div
-                                key={account.id}
-                                className="flex flex-col gap-1 justify-center items-center cursor-pointer"
-                            >
-                                <div
-                                    className={cn([
-                                        'rounded-full p-2 w-12 h-12 flex items-center justify-center font-semibold',
-                                        selectedAccount === account.id
-                                            ? 'bg-indigo-400 text-black'
-                                            : 'bg-gray-400 text-white',
-                                    ])}
-                                >
-                                    {getAbbrevation(account.name)}
-                                </div>
-                                <p
-                                    className={cn([
-                                        'text-[10px] truncate w-16 text-center',
-                                        selectedAccount === account.id &&
-                                            'text-indigo-400',
-                                    ])}
-                                >
-                                    {account.name}
-                                </p>
-                            </div>
-                        ))}
+            <div className="relative z-0 p-3">
+                <div className="flex flex-col gap-6">
+                    <div className="flex items-center gap-2">
+                        <div
+                            className="w-9 h-9 p-2 rounded-full bg-gray-500 text-white flex items-center justify-center cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsSidebarOpen(true);
+                            }}
+                        >
+                            {getAbbrevation(selectedAccount?.name || '')}
+                        </div>
+                        <p className="text-white text-lg font-semibold">
+                            {selectedAccount?.name}
+                        </p>
                     </div>
-                    <Plus
-                        className="w-5 h-5 cursor-pointer"
-                        onClick={handleAddWallet}
-                    />
+
+                    <div className="flex flex-col items-center gap-2">
+                        {Object.values(selectedAccount?.chains ?? {}).map(
+                            (chain: any) => (
+                                <div
+                                    key={chain.chainType}
+                                    className="bg-gray-500 rounded-lg py-2 px-4 cursor-pointer flex items-center gap-4 w-full text-white"
+                                >
+                                    <div className="flex flex-col">
+                                        <p className="font-semibold">
+                                            {chain.chainName}
+                                        </p>
+                                        <p className="text-sm">
+                                            {`${chainBalances[chain.chainType] ??
+                                                'Loading...'} ${chain.symbol}`}
+                                        </p>
+                                    </div>
+                                </div>
+                            ),
+                        )}
+                    </div>
                 </div>
             </div>
+
+            <SidePanel
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
+                onAccountClick={loadAccounts}
+            />
         </div>
     );
 }
