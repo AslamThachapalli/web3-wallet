@@ -8,6 +8,7 @@ import { AppProvider } from './contexts/AppContext';
 import AddWalletRoute from './routes/AddWalletRoute';
 import NewAccountRoute from './routes/NewAccountRoute';
 import AccountsRoute from './routes/AccountsRoute';
+import ImportPrivateKeyRoute from './routes/ImportPrivateKey';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -31,6 +32,10 @@ createRoot(document.getElementById('root')!).render(
                             <Route
                                 path="/new-account"
                                 element={<NewAccountRoute />}
+                            />
+                            <Route
+                                path="/import-private-key"
+                                element={<ImportPrivateKeyRoute />}
                             />
                         </Routes>
                     </BrowserRouter>

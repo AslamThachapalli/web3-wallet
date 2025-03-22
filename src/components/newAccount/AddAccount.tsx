@@ -41,7 +41,6 @@ export function AddAccount() {
         const metaData = JSON.parse(
             localStorage.getItem('accountMetadata') || '[]',
         );
-        console.log(metaData);
 
         const id = uuidV4();
         const accountMetadata = [

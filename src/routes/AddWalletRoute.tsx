@@ -39,7 +39,9 @@ export default function AddWalletRoute() {
                 <SelectionCard
                     icon={<Download />}
                     title="Import Private Key"
-                    onClick={() => {}}
+                    onClick={() => {
+                        navigate('/import-private-key');
+                    }}
                 />
             </div>
             <div className="flex items-center border-t-2 p-4">

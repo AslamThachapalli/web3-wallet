@@ -16,7 +16,7 @@ export class Ethereum {
 
     static async getBalance(publicKey: string): Promise<number> {
         const res = await fetch(
-            'https://eth-sepolia.g.alchemy.com/v2/P4G854hHX1l69UZRRfDQeOq9dTjqrnsZ',
+            `https://eth-sepolia.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_API_KEY}`,
             {
                 method: 'POST',
                 body: JSON.stringify({

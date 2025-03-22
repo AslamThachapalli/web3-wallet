@@ -15,7 +15,7 @@ export const getAbbrevation = (accountName: string) => {
 
   let abbrev = nameList[0][0];
 
-  if (nameList.length > 1) {
+  if (nameList.length > 1 && nameList[1]) {
       abbrev += nameList[1][0];
   }
 
