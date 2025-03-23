@@ -15,8 +15,15 @@ export default function AccountsRoute() {
     const [chainBalances, setChainBalances] = useState<Record<string, number>>(
         {},
     );
+    const [tokenAccounts, setTokenAccounts] = useState<any[]>([]);
+
+    const loadTokenAccounts = async (publicKey: string) => {
+        const tokenAccounts = await Solana.getAllTokenAccounts(publicKey);
+        setTokenAccounts(tokenAccounts);
+    };
 
     const loadAccounts = () => {
+        setTokenAccounts([]);
         const accountData = localStorage.getItem('accounts');
         const accounts = accountData ? JSON.parse(accountData) : [];
 
@@ -39,6 +46,10 @@ export default function AccountsRoute() {
             (account: any) => account.id === selectedAccountId,
         );
 
+        if (selectedAccount.type === 'privateKey') {
+            loadTokenAccounts(selectedAccount.chains.sol.publicKey);
+        }
+
         setSelectedAccount({
             ...selectedAccount,
             ...selectedAccountMetadata,
@@ -46,6 +57,7 @@ export default function AccountsRoute() {
     };
 
     const loadBalances = async () => {
+        setChainBalances({});
         if (!selectedAccount?.chains) return;
 
         try {
@@ -150,6 +162,39 @@ export default function AccountsRoute() {
                                 </div>
                             ),
                         )}
+                        {tokenAccounts.map((tokenAccount) => (
+                            <div
+                                key={tokenAccount.mint}
+                                className="bg-gray-500 rounded-lg py-2 px-4 cursor-pointer flex items-center gap-4 w-full text-white"
+                            >
+                                <div className="flex flex-col w-full">
+                                    <div className="flex items-center justify-between gap-2 w-full">
+                                        <p className="font-semibold">
+                                            {tokenAccount.name}
+                                        </p>
+                                        <div
+                                            className="flex items-center justify-end gap-2 group"
+                                            onClick={() =>
+                                                handleCopy(tokenAccount.mint)
+                                            }
+                                        >
+                                            <p className="text-sm">
+                                                {`${tokenAccount.mint.slice(
+                                                    0,
+                                                    4,
+                                                )}...${tokenAccount.mint.slice(
+                                                    -4,
+                                                )}`}
+                                            </p>
+                                            <Copy className="w-4 h-4 cursor-pointer text-gray-400 group-hover:text-white" />
+                                        </div>
+                                    </div>
+                                    <p className="text-sm">
+                                        {`${tokenAccount.balance} ${tokenAccount.symbol}`}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

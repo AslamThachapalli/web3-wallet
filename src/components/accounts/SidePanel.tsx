@@ -39,7 +39,7 @@ export function SidePanel({
 
     const handleAccountClick = (account: any) => {
         localStorage.setItem('selectedAccount', account.id);
-        setSelectedAccount(account);
+        setSelectedAccount(account.id);
         onAccountClick(account.id);
         setIsSidebarOpen(false);
     };
