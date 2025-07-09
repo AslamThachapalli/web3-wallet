@@ -22,5 +22,5 @@
 </table>
 
 ### Footer Note
-- The application is currently using local host inorder to persist the wallet infos. And yes, it stores every info including private keys and seed in the local store 🫣
+- The application is currently using localstorage inorder to persist the wallet infos. And yes, it stores every info including private keys and seed in the localstorage 🫣
 - The project is more for a learning purpose, so I hope this is pardonable by the security concerned folks.
