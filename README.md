@@ -7,6 +7,7 @@
 - You can view all your tokens from the imported Solana wallet if any.
 
 ### Views
+<video src="demo.mov" controls />
 
 <table>
   <tr>
